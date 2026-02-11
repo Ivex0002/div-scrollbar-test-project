@@ -52,12 +52,26 @@ export function Scrollbar({
     startScroll: 0,
   });
 
+  const isInteracting = isHover || isDragging;
+
   /**
    * merged style object
    */
   const style = useMemo(
     () => mergeStyleConfig(DEFAULT_STYLE_CONFIG, customStyle),
     [customStyle],
+  );
+
+  const currentPaddingPx = useMemo(
+    () =>
+      isInteracting
+        ? style.quickStyle.paddingHoverPx
+        : style.quickStyle.paddingPx,
+    [
+      isInteracting,
+      style.quickStyle.paddingPx,
+      style.quickStyle.paddingHoverPx,
+    ],
   );
 
   /**
@@ -79,6 +93,7 @@ export function Scrollbar({
       thumb,
       track,
       style.quickStyle.minimumSizePx,
+      currentPaddingPx,
     );
 
     onScroll();
@@ -95,7 +110,7 @@ export function Scrollbar({
       el.removeEventListener("scroll", onScroll);
       ro.disconnect();
     };
-  }, [axis, scrollAreaRef, style.quickStyle.minimumSizePx]);
+  }, [axis, scrollAreaRef, style.quickStyle.minimumSizePx, currentPaddingPx]);
 
   // drag
   useEffect(() => {
@@ -153,8 +168,6 @@ export function Scrollbar({
   };
 
   // apply styles
-  const isInteracting = isHover || isDragging;
-
   const axisStyle = useMemo(
     () => getAxisStyle(axis, style.quickStyle),
     [axis, style.quickStyle],
@@ -209,6 +222,7 @@ function createScrollHandler(
   thumb: HTMLDivElement,
   track: HTMLDivElement,
   minimumSize: number,
+  padding: number,
 ) {
   const cfg = AXIS_CONFIG[axis];
 
@@ -230,7 +244,7 @@ function createScrollHandler(
 
       thumb.style.display = "block";
 
-      const trackSize = track[cfg.trackSize];
+      const trackSize = track[cfg.trackSize] - padding * 2;
       const thumbSize = Math.max((visible / total) * trackSize, minimumSize);
 
       const thumbPos = (scroll / (total - visible)) * (trackSize - thumbSize);
@@ -264,36 +278,36 @@ const AXIS_DIMENSION = {
   y: {
     thumb: "width",
     track: "width",
-    align: "alignItems",
+    align: "justifyContent",
   },
   x: {
     thumb: "height",
     track: "height",
-    align: "justifyContent",
+    align: "alignItems",
   },
 } as const;
 
 const AXIS_POSITION = {
-  y: (offset: string) => ({
+  y: (offset: number) => ({
     track: {
       right: "4px",
-      top: offset,
-      bottom: offset,
+      top: `${offset}px`,
+      bottom: `${offset}px`,
     },
   }),
-  x: (offset: string) => ({
+  x: (offset: number) => ({
     track: {
       bottom: "4px",
-      left: offset,
-      right: offset,
+      left: `${offset}px`,
+      right: `${offset}px`,
     },
   }),
 } as const;
 
 function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
-  const { offset, thickness, borderRadius, color } = quickStyle;
+  const { offsetPx, thickness, borderRadius, color, paddingPx } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
-  const pos = AXIS_POSITION[axis](offset);
+  const pos = AXIS_POSITION[axis](offsetPx);
 
   return {
     thumb: {
@@ -307,14 +321,16 @@ function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
       [dim.align]: "center",
       backgroundColor: color.track,
       transition: thickness.transition,
+      padding: `${paddingPx}px`,
       ...pos.track,
     },
   };
 }
 
 function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
-  const { thickness, color } = quickStyle;
+  const { thickness, color, offsetHoverPx, paddingHoverPx } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
+  const pos = AXIS_POSITION[axis](offsetHoverPx);
 
   return {
     thumb: {
@@ -324,6 +340,8 @@ function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
     track: {
       [dim.track]: thickness.trackHover,
       backgroundColor: color.trackHover,
+      padding: `${paddingHoverPx}px`,
+      ...pos.track,
     },
   };
 }

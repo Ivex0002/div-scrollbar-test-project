@@ -3,7 +3,7 @@ import type { AdvancedCSSProperties, StyleConfig } from "./type";
 const BASE_TRACK_STYLE: AdvancedCSSProperties = {
   position: "absolute",
   borderRadius: "9999px",
-  // display: "flex",
+  display: "flex",
 };
 
 const BASE_THUMB_STYLE: AdvancedCSSProperties = {
@@ -15,15 +15,18 @@ const BASE_THUMB_STYLE: AdvancedCSSProperties = {
 
 export const DEFAULT_STYLE_CONFIG: StyleConfig = {
   quickStyle: {
-    offset: "6px",
+    offsetPx: 12,
+    offsetHoverPx: 6,
+    paddingPx: 0,
+    paddingHoverPx: 6,
     minimumSizePx: 20,
 
     thickness: {
       thumb: "6px",
-      thumbHover: "8px",
+      thumbHover: "6px",
       track: "6px",
-      trackHover: "8px",
-      transition: "0.15px",
+      trackHover: "6px",
+      transition: "0.2s ease",
     },
 
     borderRadius: "9999px",

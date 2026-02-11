@@ -5,7 +5,10 @@ export type Axis = "x" | "y";
 export type ScrollDirection = "x" | "y" | "auto";
 
 export type QuickStyle = {
-  offset: string;
+  offsetPx: number;
+  offsetHoverPx: number;
+  paddingPx: number;
+  paddingHoverPx: number;
   minimumSizePx: number;
 
   thickness: {

@@ -23,11 +23,9 @@ function App() {
           scrollDirection="auto"
           customStyle={{
             quickStyle: {
-              offset: "30px",
               color: { thumb: "#00000066", thumbHover: "#000000ab" },
               thickness: {
                 thumbHover: "6px",
-                trackHover: "12px",
               },
             },
           }}
