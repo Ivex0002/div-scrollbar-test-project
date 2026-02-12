@@ -3,6 +3,7 @@ import type {
   AdvancedStyle,
   Axis,
   QuickStyle,
+  StyleConfig,
   thumbAndTrack as ThumbAndTrack,
   UserStyleConfig,
 } from "./type";
@@ -50,6 +51,7 @@ export function Scrollbar({
   const dragInfoRef = useRef({
     startCoord: 0,
     startScroll: 0,
+    didDrag: false,
   });
 
   const isInteracting = isHover || isDragging;
@@ -93,7 +95,7 @@ export function Scrollbar({
       thumb,
       track,
       style.quickStyle.minimumSizePx,
-      currentPaddingPx,
+      // currentPaddingPx,
     );
 
     onScroll();
@@ -116,12 +118,20 @@ export function Scrollbar({
   useEffect(() => {
     if (!isDragging) return;
 
+    console.log("drag");
+
     const handleMove = (e: MouseEvent) => {
       const el = scrollAreaRef.current;
       const track = trackRef.current;
       if (!el || !track) return;
 
       const delta = e[cfg.clientCoord] - dragInfoRef.current.startCoord;
+
+      const DRAG_THRESHOLD = 3;
+
+      if (Math.abs(delta) > DRAG_THRESHOLD) {
+        dragInfoRef.current.didDrag = true;
+      }
 
       const visible = el[cfg.clientSize];
       const total = el[cfg.scrollSize];
@@ -164,8 +174,35 @@ export function Scrollbar({
     dragInfoRef.current = {
       startCoord: e[cfg.clientCoord],
       startScroll: el[cfg.scrollPos],
+      didDrag: false,
     };
   };
+
+  // track click thumb move
+  useEffect(() => {
+    const scrollArea = scrollAreaRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!scrollArea || !track || !thumb) return;
+
+    // console.log("track click thumb move");
+
+    const handleTrackClick = createTrackClickHandler(
+      scrollArea,
+      track,
+      thumb,
+      axis,
+      currentPaddingPx,
+      style,
+      dragInfoRef,
+    );
+
+    track.addEventListener("click", handleTrackClick);
+
+    return () => {
+      track.removeEventListener("click", handleTrackClick);
+    };
+  }, [scrollAreaRef, axis, currentPaddingPx, style]);
 
   // apply styles
   const axisStyle = useMemo(
@@ -222,7 +259,7 @@ function createScrollHandler(
   thumb: HTMLDivElement,
   track: HTMLDivElement,
   minimumSize: number,
-  padding: number,
+  // padding: number,
 ) {
   const cfg = AXIS_CONFIG[axis];
 
@@ -244,7 +281,7 @@ function createScrollHandler(
 
       thumb.style.display = "block";
 
-      const trackSize = track[cfg.trackSize] - padding * 2;
+      const trackSize = track[cfg.trackSize];
       const thumbSize = Math.max((visible / total) * trackSize, minimumSize);
 
       const thumbPos = (scroll / (total - visible)) * (trackSize - thumbSize);
@@ -252,6 +289,56 @@ function createScrollHandler(
       thumb.style[cfg.sizeProp] = `${thumbSize}px`;
       thumb.style.transform = cfg.transform(thumbPos);
     });
+  };
+}
+
+function createTrackClickHandler(
+  scrollArea: HTMLDivElement,
+  track: HTMLDivElement,
+  thumb: HTMLDivElement,
+  axis: Axis,
+  currentPaddingPx: number,
+  style: StyleConfig,
+  dragInfoRef: React.RefObject<{
+    startCoord: number;
+    startScroll: number;
+    didDrag: boolean;
+  }>,
+) {
+  return (e: MouseEvent) => {
+    if (dragInfoRef.current.didDrag) {
+      dragInfoRef.current.didDrag = false;
+      return;
+    }
+    const cfg = AXIS_CONFIG[axis];
+
+    console.log("createTrackClickHandler");
+    if (!scrollArea || !track || !thumb) return;
+
+    const rect = track.getBoundingClientRect();
+
+    const clickPos = e[cfg.clientCoord] - (axis === "y" ? rect.top : rect.left);
+
+    const visible = scrollArea[cfg.clientSize];
+    const total = scrollArea[cfg.scrollSize];
+
+    const trackSize = track[cfg.trackSize] - currentPaddingPx * 2;
+
+    const thumbSize = Math.max(
+      (visible / total) * trackSize,
+      style.quickStyle.minimumSizePx,
+    );
+
+    const maxThumbMove = trackSize - thumbSize;
+    const halfTrack = trackSize / 2;
+
+    const thumbPos = clickPos < halfTrack ? clickPos : clickPos - thumbSize;
+
+    const clampedThumbPos = Math.max(0, Math.min(thumbPos, maxThumbMove));
+
+    const scrollRatio = (total - visible) / maxThumbMove;
+
+    scrollArea[cfg.scrollPos] = clampedThumbPos * scrollRatio;
   };
 }
 
