@@ -50,4 +50,6 @@ type DeepPartial<T> = {
 
 export type UserStyleConfig = DeepPartial<StyleConfig>;
 
-export type thumbAndTrack = { thumb: CSSProperties; track: CSSProperties };
+export type Thumb = { thumb: CSSProperties };
+export type Track = { track: CSSProperties };
+export type PaddingArea = { paddingArea: CSSProperties };

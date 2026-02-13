@@ -3,7 +3,6 @@ import type { AdvancedCSSProperties, StyleConfig } from "./type";
 const BASE_TRACK_STYLE: AdvancedCSSProperties = {
   position: "absolute",
   borderRadius: "9999px",
-  display: "flex",
 };
 
 const BASE_THUMB_STYLE: AdvancedCSSProperties = {

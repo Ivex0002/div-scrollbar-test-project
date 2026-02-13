@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   AdvancedStyle,
   Axis,
+  PaddingArea,
   QuickStyle,
   StyleConfig,
-  thumbAndTrack as ThumbAndTrack,
+  Thumb,
+  Track,
   UserStyleConfig,
 } from "./type";
 import { mergeStyleConfig } from "./util";
@@ -236,24 +238,33 @@ export function Scrollbar({
     [hoverStyle, style.advancedStyle],
   );
 
-  const { thumb: thumbStyle, track: trackStyle } = mergedBaseStyle;
-  const { thumb: thumbHoverStyle, track: trackHoverStyle } = mergedHoverstyle;
+  const {
+    thumb: thumbStyle,
+    track: trackStyle,
+    paddingArea: paddingAreaStyle,
+  } = mergedBaseStyle;
+  const { thumb: thumbHoverStyle, paddingArea: trackHoverStyle } =
+    mergedHoverstyle;
 
   return (
     // fixed track
+    // 색상 제외 필요
     <div
       ref={trackRef}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       style={{
         ...trackStyle,
-        backgroundColor: "transparent",
       }}
     >
       {/* padding apply area */}
       <div
         ref={paddingTrackRef}
-        style={{ ...trackStyle, ...(isInteracting ? trackHoverStyle : null) }}
+        // trackStyle 을 전용 스타일로 변경 필요 > 패딩, 색상
+        style={{
+          ...paddingAreaStyle,
+          ...(isInteracting ? trackHoverStyle : null),
+        }}
       />
       {/* thumb */}
       <div
@@ -380,12 +391,10 @@ const AXIS_DIMENSION = {
   y: {
     thumb: "width",
     track: "width",
-    align: "justifyContent",
   },
   x: {
     thumb: "height",
     track: "height",
-    align: "alignItems",
   },
 } as const;
 
@@ -406,7 +415,10 @@ const AXIS_POSITION = {
   }),
 } as const;
 
-function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
+function getAxisStyle(
+  axis: Axis,
+  quickStyle: QuickStyle,
+): Thumb & Track & PaddingArea {
   const { offset, thickness, borderRadius, color, padding } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
   const pos = AXIS_POSITION[axis](offset);
@@ -419,17 +431,24 @@ function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
       transition: thickness.transition,
     },
     track: {
-      [dim.track]: thickness.track,
-      [dim.align]: "center",
-      backgroundColor: color.track,
+      backgroundColor: "transparent",
       transition: thickness.transition,
-      padding: padding,
       ...pos.track,
+    },
+    paddingArea: {
+      position: "absolute",
+      inset: 0,
+      backgroundColor: color.track,
+      [dim.track]: thickness.track,
+      padding: padding,
     },
   };
 }
 
-function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
+function getHoverStyle(
+  axis: Axis,
+  quickStyle: QuickStyle,
+): Thumb & PaddingArea {
   const { thickness, color, paddingHover } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
 
@@ -438,7 +457,7 @@ function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
       [dim.thumb]: thickness.thumbHover,
       backgroundColor: color.thumbHover,
     },
-    track: {
+    paddingArea: {
       [dim.track]: thickness.trackHover,
       backgroundColor: color.trackHover,
       padding: paddingHover,
@@ -450,9 +469,9 @@ function mergeBaseStyle({
   axisStyle,
   advancedStyle,
 }: {
-  axisStyle: ThumbAndTrack;
+  axisStyle: Thumb & Track & PaddingArea;
   advancedStyle?: Partial<AdvancedStyle>;
-}): ThumbAndTrack {
+}): Thumb & Track & PaddingArea {
   return {
     thumb: {
       ...axisStyle.thumb,
@@ -462,6 +481,9 @@ function mergeBaseStyle({
       ...axisStyle.track,
       ...advancedStyle?.track,
     },
+    paddingArea: {
+      ...axisStyle.paddingArea,
+    },
   };
 }
 
@@ -469,16 +491,16 @@ function mergeHoverstyle({
   hoverStyle,
   advancedStyle,
 }: {
-  hoverStyle: ThumbAndTrack;
+  hoverStyle: Thumb & PaddingArea;
   advancedStyle?: Partial<AdvancedStyle>;
-}): ThumbAndTrack {
+}): Thumb & PaddingArea {
   return {
     thumb: {
       ...hoverStyle.thumb,
       ...advancedStyle?.thumbHover,
     },
-    track: {
-      ...hoverStyle.track,
+    paddingArea: {
+      ...hoverStyle.paddingArea,
       ...advancedStyle?.trackHover,
     },
   };
