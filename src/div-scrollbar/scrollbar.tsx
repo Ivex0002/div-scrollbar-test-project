@@ -42,6 +42,7 @@ export function Scrollbar({
   scrollAreaRef,
   customStyle = {},
 }: ScrollbarProps) {
+  const paddingTrackRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);
@@ -64,16 +65,10 @@ export function Scrollbar({
     [customStyle],
   );
 
-  const currentPaddingPx = useMemo(
+  const currentPadding = useMemo(
     () =>
-      isInteracting
-        ? style.quickStyle.paddingHoverPx
-        : style.quickStyle.paddingPx,
-    [
-      isInteracting,
-      style.quickStyle.paddingPx,
-      style.quickStyle.paddingHoverPx,
-    ],
+      isInteracting ? style.quickStyle.paddingHover : style.quickStyle.padding,
+    [isInteracting, style.quickStyle.padding, style.quickStyle.paddingHover],
   );
 
   /**
@@ -95,7 +90,6 @@ export function Scrollbar({
       thumb,
       track,
       style.quickStyle.minimumSizePx,
-      // currentPaddingPx,
     );
 
     onScroll();
@@ -112,7 +106,17 @@ export function Scrollbar({
       el.removeEventListener("scroll", onScroll);
       ro.disconnect();
     };
-  }, [axis, scrollAreaRef, style.quickStyle.minimumSizePx, currentPaddingPx]);
+  }, [axis, scrollAreaRef, style.quickStyle.minimumSizePx]);
+
+  // separated padding style apply track
+  useEffect(() => {
+    const paddingTrack = paddingTrackRef.current;
+    if (!paddingTrack) return;
+
+    paddingTrack.style.padding = currentPadding;
+
+    return () => {};
+  }, [isInteracting, paddingTrackRef, currentPadding]);
 
   // drag
   useEffect(() => {
@@ -192,7 +196,6 @@ export function Scrollbar({
       track,
       thumb,
       axis,
-      currentPaddingPx,
       style,
       dragInfoRef,
     );
@@ -202,7 +205,7 @@ export function Scrollbar({
     return () => {
       track.removeEventListener("click", handleTrackClick);
     };
-  }, [scrollAreaRef, axis, currentPaddingPx, style]);
+  }, [scrollAreaRef, axis, style]);
 
   // apply styles
   const axisStyle = useMemo(
@@ -237,16 +240,29 @@ export function Scrollbar({
   const { thumb: thumbHoverStyle, track: trackHoverStyle } = mergedHoverstyle;
 
   return (
+    // fixed track
     <div
       ref={trackRef}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      style={{ ...trackStyle, ...(isInteracting ? trackHoverStyle : null) }}
+      style={{
+        ...trackStyle,
+        backgroundColor: "transparent",
+      }}
     >
+      {/* padding apply area */}
+      <div
+        ref={paddingTrackRef}
+        style={{ ...trackStyle, ...(isInteracting ? trackHoverStyle : null) }}
+      />
+      {/* thumb */}
       <div
         ref={thumbRef}
         onMouseDown={handleMouseDown}
-        style={{ ...thumbStyle, ...(isInteracting ? thumbHoverStyle : null) }}
+        style={{
+          ...thumbStyle,
+          ...(isInteracting ? thumbHoverStyle : null),
+        }}
       />
     </div>
   );
@@ -297,7 +313,6 @@ function createTrackClickHandler(
   track: HTMLDivElement,
   thumb: HTMLDivElement,
   axis: Axis,
-  currentPaddingPx: number,
   style: StyleConfig,
   dragInfoRef: React.RefObject<{
     startCoord: number;
@@ -322,7 +337,7 @@ function createTrackClickHandler(
     const visible = scrollArea[cfg.clientSize];
     const total = scrollArea[cfg.scrollSize];
 
-    const trackSize = track[cfg.trackSize] - currentPaddingPx * 2;
+    const trackSize = track[cfg.trackSize];
 
     const thumbSize = Math.max(
       (visible / total) * trackSize,
@@ -375,26 +390,26 @@ const AXIS_DIMENSION = {
 } as const;
 
 const AXIS_POSITION = {
-  y: (offset: number) => ({
+  y: (offset: string) => ({
     track: {
       right: "4px",
-      top: `${offset}px`,
-      bottom: `${offset}px`,
+      top: offset,
+      bottom: offset,
     },
   }),
-  x: (offset: number) => ({
+  x: (offset: string) => ({
     track: {
       bottom: "4px",
-      left: `${offset}px`,
-      right: `${offset}px`,
+      left: offset,
+      right: offset,
     },
   }),
 } as const;
 
 function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
-  const { offsetPx, thickness, borderRadius, color, paddingPx } = quickStyle;
+  const { offset, thickness, borderRadius, color, padding } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
-  const pos = AXIS_POSITION[axis](offsetPx);
+  const pos = AXIS_POSITION[axis](offset);
 
   return {
     thumb: {
@@ -408,16 +423,15 @@ function getAxisStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
       [dim.align]: "center",
       backgroundColor: color.track,
       transition: thickness.transition,
-      padding: `${paddingPx}px`,
+      padding: padding,
       ...pos.track,
     },
   };
 }
 
 function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
-  const { thickness, color, offsetHoverPx, paddingHoverPx } = quickStyle;
+  const { thickness, color, paddingHover } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
-  const pos = AXIS_POSITION[axis](offsetHoverPx);
 
   return {
     thumb: {
@@ -427,8 +441,7 @@ function getHoverStyle(axis: Axis, quickStyle: QuickStyle): ThumbAndTrack {
     track: {
       [dim.track]: thickness.trackHover,
       backgroundColor: color.trackHover,
-      padding: `${paddingHoverPx}px`,
-      ...pos.track,
+      padding: paddingHover,
     },
   };
 }

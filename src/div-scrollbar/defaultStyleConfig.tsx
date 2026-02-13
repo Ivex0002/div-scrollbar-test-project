@@ -15,10 +15,9 @@ const BASE_THUMB_STYLE: AdvancedCSSProperties = {
 
 export const DEFAULT_STYLE_CONFIG: StyleConfig = {
   quickStyle: {
-    offsetPx: 12,
-    offsetHoverPx: 6,
-    paddingPx: 0,
-    paddingHoverPx: 6,
+    offset: "12px",
+    padding: "0",
+    paddingHover: "6px",
     minimumSizePx: 20,
 
     thickness: {
