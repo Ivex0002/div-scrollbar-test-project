@@ -4,12 +4,21 @@ export type Axis = "x" | "y";
 
 export type ScrollDirection = "x" | "y" | "auto";
 
+export type AnimatableCSSProperty = keyof React.CSSProperties;
+
+export type Transition = {
+  duration: string;
+  timingFunction: string;
+  properties: AnimatableCSSProperty[];
+};
+
 export type QuickStyle = {
   offset: string;
   padding: string;
   paddingHover: string;
   minimumSizePx: number;
-  transition: string;
+  transition: Transition;
+  borderRadius: string;
 
   thickness: {
     thumb: string;
@@ -17,8 +26,6 @@ export type QuickStyle = {
     track: string;
     trackHover: string;
   };
-
-  borderRadius: string;
 
   color: {
     thumb: string;

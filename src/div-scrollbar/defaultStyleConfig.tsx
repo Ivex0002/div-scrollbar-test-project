@@ -13,6 +13,8 @@ const BASE_TRACK_STYLE: AdvancedCSSProperties = {
   position: "absolute",
   top: "50%",
   transform: "translateY(-50%)",
+  display: "flex",
+  justifyContent: "center",
 };
 
 const BASE_THUMB_STYLE: AdvancedCSSProperties = {
@@ -25,7 +27,13 @@ export const DEFAULT_STYLE_CONFIG: StyleConfig = {
     padding: "0",
     paddingHover: "6px",
     minimumSizePx: 20,
-    transition: "background-color 0.15s ease, padding 0.15s ease",
+    transition: {
+      duration: "0.15s",
+      timingFunction: "ease",
+      properties: ["backgroundColor", "padding", "width", "height"],
+    },
+
+    borderRadius: "9999px",
 
     thickness: {
       thumb: "6px",
@@ -33,8 +41,6 @@ export const DEFAULT_STYLE_CONFIG: StyleConfig = {
       track: "6px",
       trackHover: "6px",
     },
-
-    borderRadius: "9999px",
 
     color: {
       thumb: "#00000044",

@@ -22,10 +22,10 @@ function App() {
         <DivScrollbar
           scrollDirection="auto"
           customStyle={{
-            quickStyle: {},
+            quickStyle: { thickness: { thumb: "12px" } },
           }}
         >
-          <div style={{ height: "40rem", width: "20rem" }}>
+          <div style={{ height: "40rem", width: "40rem" }}>
             <a href="https://vite.dev" target="_blank">
               <img src={viteLogo} className="logo" alt="Vite logo" />
             </a>

@@ -1,4 +1,10 @@
-import type { StyleConfig, UserStyleConfig } from "./type";
+import type {
+  AdvancedStyle,
+  StyleConfig,
+  Thumb,
+  Track,
+  UserStyleConfig,
+} from "../type";
 
 type PlainObject = Record<string, unknown>;
 
@@ -49,4 +55,42 @@ function deepMergeObject(base: PlainObject, patch: PlainObject): PlainObject {
   }
 
   return result;
+}
+
+export function mergeBaseStyle({
+  axisStyle,
+  advancedStyle,
+}: {
+  axisStyle: Thumb & Track;
+  advancedStyle?: Partial<AdvancedStyle>;
+}): Thumb & Track {
+  return {
+    thumb: {
+      ...axisStyle.thumb,
+      ...advancedStyle?.thumb,
+    },
+    track: {
+      ...axisStyle.track,
+      ...advancedStyle?.track,
+    },
+  };
+}
+
+export function mergeHoverstyle({
+  hoverStyle,
+  advancedStyle,
+}: {
+  hoverStyle: Thumb & Track;
+  advancedStyle?: Partial<AdvancedStyle>;
+}): Thumb & Track {
+  return {
+    thumb: {
+      ...hoverStyle.thumb,
+      ...advancedStyle?.thumbHover,
+    },
+    track: {
+      ...hoverStyle.track,
+      ...advancedStyle?.trackHover,
+    },
+  };
 }
