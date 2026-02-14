@@ -26,21 +26,28 @@ export function getAxisStyle(
   const formattedTransition = getTransition(transition);
 
   return {
+    layout: {
+      [dim.thickness]: thickness.track,
+      [dim.align]: "center",
+      ...pos.layout,
+    },
+    track: {
+      width: "100%",
+      height: "100%",
+      transform: dim.transform,
+      [dim.crossPos]: "50%",
+      [dim.align]: "center",
+      borderRadius: borderRadius,
+      backgroundColor: color.track,
+      padding: padding,
+      transition: formattedTransition,
+    },
     thumb: {
       [dim.thickness]: thickness.thumb,
       borderRadius: borderRadius,
       backgroundColor: color.thumb,
       transition: formattedTransition,
     },
-    track: {
-      width: "100%",
-      height: "100%",
-      borderRadius: borderRadius,
-      backgroundColor: color.track,
-      padding: padding,
-      transition: formattedTransition,
-    },
-    layout: { [dim.thickness]: thickness.track, ...pos.layout },
   };
 }
 

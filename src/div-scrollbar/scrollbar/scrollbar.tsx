@@ -6,7 +6,7 @@ import {
   mergeHoverstyle,
   mergeStyleConfig,
 } from "./mergeStyles";
-import { AXIS_CONFIG } from "./constants";
+import { AXIS_CONFIG, DRAG_THRESHOLD } from "./constants";
 import { createScrollHandler } from "./handlers/createScrollHandler";
 import { calcDragScroll } from "./handlers/calcDragScroll";
 import { createTrackClickHandler } from "./handlers/createTrackClickHandler";
@@ -95,15 +95,11 @@ export function Scrollbar({
     if (!track) return;
 
     track.style.padding = currentPadding;
-
-    return () => {};
   }, [isInteracting, TrackRef, currentPadding]);
 
   // drag
   useEffect(() => {
     if (!isDragging) return;
-
-    console.log("drag");
 
     const handleMove = (e: MouseEvent) => {
       const el = scrollAreaRef.current;
@@ -111,8 +107,6 @@ export function Scrollbar({
       if (!el || !layout) return;
 
       const delta = e[cfg.clientCoord] - dragInfoRef.current.startCoord;
-
-      const DRAG_THRESHOLD = 3;
 
       if (Math.abs(delta) > DRAG_THRESHOLD) {
         dragInfoRef.current.didDrag = true;
@@ -169,8 +163,6 @@ export function Scrollbar({
     const layout = layoutRef.current;
     const thumb = thumbRef.current;
     if (!scrollArea || !layout || !thumb) return;
-
-    // console.log("track click thumb move");
 
     const handleTrackClick = createTrackClickHandler(
       scrollArea,

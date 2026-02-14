@@ -6,15 +6,11 @@ export const BASE_LAYOUT_STYLE: CSSProperties = {
   willChange: "transform",
   cursor: "pointer",
   display: "flex",
-  justifyContent: "center",
 };
 
 const BASE_TRACK_STYLE: AdvancedCSSProperties = {
   position: "absolute",
-  top: "50%",
-  transform: "translateY(-50%)",
   display: "flex",
-  justifyContent: "center",
 };
 
 const BASE_THUMB_STYLE: AdvancedCSSProperties = {
@@ -23,7 +19,7 @@ const BASE_THUMB_STYLE: AdvancedCSSProperties = {
 
 export const DEFAULT_STYLE_CONFIG: StyleConfig = {
   quickStyle: {
-    offset: "12px",
+    offset: "24px",
     padding: "0",
     paddingHover: "6px",
     minimumSizePx: 20,

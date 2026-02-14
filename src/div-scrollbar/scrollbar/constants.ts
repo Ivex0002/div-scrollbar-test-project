@@ -1,3 +1,5 @@
+export const DRAG_THRESHOLD = 3;
+
 export const AXIS_CONFIG = {
   y: {
     scrollPos: "scrollTop",
@@ -22,9 +24,15 @@ export const AXIS_CONFIG = {
 export const AXIS_DIMENSION = {
   y: {
     thickness: "width",
+    align: "justifyContent",
+    crossPos: "top",
+    transform: "translateY(-50%)",
   },
   x: {
     thickness: "height",
+    align: "alignItems",
+    crossPos: "left",
+    transform: "translateX(-50%)",
   },
 } as const;
 
