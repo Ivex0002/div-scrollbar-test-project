@@ -9,13 +9,13 @@ export type QuickStyle = {
   padding: string;
   paddingHover: string;
   minimumSizePx: number;
+  transition: string;
 
   thickness: {
     thumb: string;
     thumbHover: string;
     track: string;
     trackHover: string;
-    transition: string;
   };
 
   borderRadius: string;
@@ -52,4 +52,4 @@ export type UserStyleConfig = DeepPartial<StyleConfig>;
 
 export type Thumb = { thumb: CSSProperties };
 export type Track = { track: CSSProperties };
-export type PaddingArea = { paddingArea: CSSProperties };
+export type Layout = { layout: CSSProperties };

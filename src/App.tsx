@@ -22,12 +22,7 @@ function App() {
         <DivScrollbar
           scrollDirection="auto"
           customStyle={{
-            quickStyle: {
-              color: { thumb: "#00000066", thumbHover: "#000000ab" },
-              thickness: {
-                thumbHover: "6px",
-              },
-            },
+            quickStyle: {},
           }}
         >
           <div style={{ height: "40rem", width: "20rem" }}>

@@ -1,15 +1,22 @@
+import type { CSSProperties } from "react";
 import type { AdvancedCSSProperties, StyleConfig } from "./type";
+
+export const BASE_LAYOUT_STYLE: CSSProperties = {
+  position: "absolute",
+  willChange: "transform",
+  cursor: "pointer",
+  display: "flex",
+  justifyContent: "center",
+};
 
 const BASE_TRACK_STYLE: AdvancedCSSProperties = {
   position: "absolute",
-  borderRadius: "9999px",
+  top: "50%",
+  transform: "translateY(-50%)",
 };
 
 const BASE_THUMB_STYLE: AdvancedCSSProperties = {
-  borderRadius: "9999px",
-  willChange: "transform",
-  cursor: "pointer",
-  transition: "background-color 0.15s ease",
+  position: "absolute",
 };
 
 export const DEFAULT_STYLE_CONFIG: StyleConfig = {
@@ -18,13 +25,13 @@ export const DEFAULT_STYLE_CONFIG: StyleConfig = {
     padding: "0",
     paddingHover: "6px",
     minimumSizePx: 20,
+    transition: "background-color 0.15s ease, padding 0.15s ease",
 
     thickness: {
       thumb: "6px",
       thumbHover: "6px",
       track: "6px",
       trackHover: "6px",
-      transition: "0.2s ease",
     },
 
     borderRadius: "9999px",

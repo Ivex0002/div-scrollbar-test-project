@@ -2,15 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   AdvancedStyle,
   Axis,
-  PaddingArea,
+  Layout,
   QuickStyle,
   StyleConfig,
   Thumb,
   Track,
   UserStyleConfig,
-} from "./type";
-import { mergeStyleConfig } from "./util";
-import { DEFAULT_STYLE_CONFIG } from "./defaultStyleConfig";
+} from "../type";
+import { mergeStyleConfig } from "../util";
+import { BASE_LAYOUT_STYLE, DEFAULT_STYLE_CONFIG } from "../defaultStyleConfig";
 
 const AXIS_CONFIG = {
   y: {
@@ -44,8 +44,8 @@ export function Scrollbar({
   scrollAreaRef,
   customStyle = {},
 }: ScrollbarProps) {
-  const paddingTrackRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const TrackRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);
 
@@ -82,15 +82,15 @@ export function Scrollbar({
   useEffect(() => {
     const el = scrollAreaRef.current;
     const thumb = thumbRef.current;
-    const track = trackRef.current;
-    if (!el || !thumb || !track) return;
+    const layout = layoutRef.current;
+    if (!el || !thumb || !layout) return;
 
     const onScroll = createScrollHandler(
       axis,
       rafId,
       el,
       thumb,
-      track,
+      layout,
       style.quickStyle.minimumSizePx,
     );
 
@@ -112,13 +112,13 @@ export function Scrollbar({
 
   // separated padding style apply track
   useEffect(() => {
-    const paddingTrack = paddingTrackRef.current;
-    if (!paddingTrack) return;
+    const track = TrackRef.current;
+    if (!track) return;
 
-    paddingTrack.style.padding = currentPadding;
+    track.style.padding = currentPadding;
 
     return () => {};
-  }, [isInteracting, paddingTrackRef, currentPadding]);
+  }, [isInteracting, TrackRef, currentPadding]);
 
   // drag
   useEffect(() => {
@@ -128,8 +128,8 @@ export function Scrollbar({
 
     const handleMove = (e: MouseEvent) => {
       const el = scrollAreaRef.current;
-      const track = trackRef.current;
-      if (!el || !track) return;
+      const layout = layoutRef.current;
+      if (!el || !layout) return;
 
       const delta = e[cfg.clientCoord] - dragInfoRef.current.startCoord;
 
@@ -141,7 +141,7 @@ export function Scrollbar({
 
       const visible = el[cfg.clientSize];
       const total = el[cfg.scrollSize];
-      const trackSize = track[cfg.trackSize];
+      const trackSize = layout[cfg.trackSize];
 
       const thumbSize = Math.max(
         (visible / total) * trackSize,
@@ -187,25 +187,25 @@ export function Scrollbar({
   // track click thumb move
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
-    const track = trackRef.current;
+    const layout = layoutRef.current;
     const thumb = thumbRef.current;
-    if (!scrollArea || !track || !thumb) return;
+    if (!scrollArea || !layout || !thumb) return;
 
     // console.log("track click thumb move");
 
     const handleTrackClick = createTrackClickHandler(
       scrollArea,
-      track,
+      layout,
       thumb,
       axis,
       style,
       dragInfoRef,
     );
 
-    track.addEventListener("click", handleTrackClick);
+    layout.addEventListener("click", handleTrackClick);
 
     return () => {
-      track.removeEventListener("click", handleTrackClick);
+      layout.removeEventListener("click", handleTrackClick);
     };
   }, [scrollAreaRef, axis, style]);
 
@@ -238,43 +238,34 @@ export function Scrollbar({
     [hoverStyle, style.advancedStyle],
   );
 
-  const {
-    thumb: thumbStyle,
-    track: trackStyle,
-    paddingArea: paddingAreaStyle,
-  } = mergedBaseStyle;
-  const { thumb: thumbHoverStyle, paddingArea: trackHoverStyle } =
-    mergedHoverstyle;
+  const { thumb: thumbStyle, track: trackStyle } = mergedBaseStyle;
+  const { thumb: thumbHoverStyle, track: trackHoverStyle } = mergedHoverstyle;
 
   return (
-    // fixed track
-    // 색상 제외 필요
     <div
-      ref={trackRef}
+      className="layout"
+      ref={layoutRef}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      style={{
-        ...trackStyle,
-      }}
+      style={{ ...BASE_LAYOUT_STYLE, ...axisStyle.layout }}
     >
-      {/* padding apply area */}
       <div
-        ref={paddingTrackRef}
-        // trackStyle 을 전용 스타일로 변경 필요 > 패딩, 색상
+        className="track"
+        ref={TrackRef}
         style={{
-          ...paddingAreaStyle,
+          ...trackStyle,
           ...(isInteracting ? trackHoverStyle : null),
         }}
-      />
-      {/* thumb */}
-      <div
-        ref={thumbRef}
-        onMouseDown={handleMouseDown}
-        style={{
-          ...thumbStyle,
-          ...(isInteracting ? thumbHoverStyle : null),
-        }}
-      />
+      >
+        <div
+          ref={thumbRef}
+          onMouseDown={handleMouseDown}
+          style={{
+            ...thumbStyle,
+            ...(isInteracting ? thumbHoverStyle : null),
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -284,9 +275,8 @@ function createScrollHandler(
   rafId: React.RefObject<number | null>,
   scrollArea: HTMLDivElement,
   thumb: HTMLDivElement,
-  track: HTMLDivElement,
+  layout: HTMLDivElement,
   minimumSize: number,
-  // padding: number,
 ) {
   const cfg = AXIS_CONFIG[axis];
 
@@ -301,17 +291,17 @@ function createScrollHandler(
       const scroll = scrollArea[cfg.scrollPos];
 
       if (total <= visible) {
-        track.style.display = "none";
+        layout.style.display = "none";
         thumb.style.display = "none";
         return;
       }
 
       thumb.style.display = "block";
 
-      const trackSize = track[cfg.trackSize];
-      const thumbSize = Math.max((visible / total) * trackSize, minimumSize);
+      const layoutSize = layout[cfg.trackSize];
+      const thumbSize = Math.max((visible / total) * layoutSize, minimumSize);
 
-      const thumbPos = (scroll / (total - visible)) * (trackSize - thumbSize);
+      const thumbPos = (scroll / (total - visible)) * (layoutSize - thumbSize);
 
       thumb.style[cfg.sizeProp] = `${thumbSize}px`;
       thumb.style.transform = cfg.transform(thumbPos);
@@ -321,7 +311,7 @@ function createScrollHandler(
 
 function createTrackClickHandler(
   scrollArea: HTMLDivElement,
-  track: HTMLDivElement,
+  layout: HTMLDivElement,
   thumb: HTMLDivElement,
   axis: Axis,
   style: StyleConfig,
@@ -339,16 +329,16 @@ function createTrackClickHandler(
     const cfg = AXIS_CONFIG[axis];
 
     console.log("createTrackClickHandler");
-    if (!scrollArea || !track || !thumb) return;
+    if (!scrollArea || !layout || !thumb) return;
 
-    const rect = track.getBoundingClientRect();
+    const rect = layout.getBoundingClientRect();
 
     const clickPos = e[cfg.clientCoord] - (axis === "y" ? rect.top : rect.left);
 
     const visible = scrollArea[cfg.clientSize];
     const total = scrollArea[cfg.scrollSize];
 
-    const trackSize = track[cfg.trackSize];
+    const trackSize = layout[cfg.trackSize];
 
     const thumbSize = Math.max(
       (visible / total) * trackSize,
@@ -389,26 +379,24 @@ function calcDragScroll({
 
 const AXIS_DIMENSION = {
   y: {
-    thumb: "width",
-    track: "width",
+    thickness: "width",
   },
   x: {
-    thumb: "height",
-    track: "height",
+    thickness: "height",
   },
 } as const;
 
 const AXIS_POSITION = {
   y: (offset: string) => ({
-    track: {
-      right: "4px",
+    layout: {
+      right: "12px",
       top: offset,
       bottom: offset,
     },
   }),
   x: (offset: string) => ({
-    track: {
-      bottom: "4px",
+    layout: {
+      bottom: "12px",
       left: offset,
       right: offset,
     },
@@ -418,47 +406,42 @@ const AXIS_POSITION = {
 function getAxisStyle(
   axis: Axis,
   quickStyle: QuickStyle,
-): Thumb & Track & PaddingArea {
-  const { offset, thickness, borderRadius, color, padding } = quickStyle;
+): Thumb & Track & Layout {
+  const { offset, thickness, borderRadius, color, padding, transition } =
+    quickStyle;
   const dim = AXIS_DIMENSION[axis];
   const pos = AXIS_POSITION[axis](offset);
 
   return {
     thumb: {
-      [dim.thumb]: thickness.thumb,
+      [dim.thickness]: thickness.thumb,
       borderRadius: borderRadius,
       backgroundColor: color.thumb,
-      transition: thickness.transition,
+      transition: transition,
     },
     track: {
-      backgroundColor: "transparent",
-      transition: thickness.transition,
-      ...pos.track,
-    },
-    paddingArea: {
-      position: "absolute",
-      inset: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: borderRadius,
       backgroundColor: color.track,
-      [dim.track]: thickness.track,
       padding: padding,
+      transition: transition,
     },
+    layout: { [dim.thickness]: thickness.track, ...pos.layout },
   };
 }
 
-function getHoverStyle(
-  axis: Axis,
-  quickStyle: QuickStyle,
-): Thumb & PaddingArea {
+function getHoverStyle(axis: Axis, quickStyle: QuickStyle): Thumb & Track {
   const { thickness, color, paddingHover } = quickStyle;
   const dim = AXIS_DIMENSION[axis];
 
   return {
     thumb: {
-      [dim.thumb]: thickness.thumbHover,
+      [dim.thickness]: thickness.thumbHover,
       backgroundColor: color.thumbHover,
     },
-    paddingArea: {
-      [dim.track]: thickness.trackHover,
+    track: {
+      [dim.thickness]: thickness.trackHover,
       backgroundColor: color.trackHover,
       padding: paddingHover,
     },
@@ -469,9 +452,9 @@ function mergeBaseStyle({
   axisStyle,
   advancedStyle,
 }: {
-  axisStyle: Thumb & Track & PaddingArea;
+  axisStyle: Thumb & Track;
   advancedStyle?: Partial<AdvancedStyle>;
-}): Thumb & Track & PaddingArea {
+}): Thumb & Track {
   return {
     thumb: {
       ...axisStyle.thumb,
@@ -481,9 +464,6 @@ function mergeBaseStyle({
       ...axisStyle.track,
       ...advancedStyle?.track,
     },
-    paddingArea: {
-      ...axisStyle.paddingArea,
-    },
   };
 }
 
@@ -491,16 +471,16 @@ function mergeHoverstyle({
   hoverStyle,
   advancedStyle,
 }: {
-  hoverStyle: Thumb & PaddingArea;
+  hoverStyle: Thumb & Track;
   advancedStyle?: Partial<AdvancedStyle>;
-}): Thumb & PaddingArea {
+}): Thumb & Track {
   return {
     thumb: {
       ...hoverStyle.thumb,
       ...advancedStyle?.thumbHover,
     },
-    paddingArea: {
-      ...hoverStyle.paddingArea,
+    track: {
+      ...hoverStyle.track,
       ...advancedStyle?.trackHover,
     },
   };

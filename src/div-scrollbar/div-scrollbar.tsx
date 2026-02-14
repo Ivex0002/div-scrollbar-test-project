@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CONTAINER_STYLE, getScrollAreaStyle } from "./style";
 import type { ScrollDirection, UserStyleConfig } from "./type";
-import { Scrollbar } from "./scrollbar";
+import { Scrollbar } from "./scrollbar/scrollbar";
 
 type DivScrollbarProps = {
   children?: React.ReactNode;
