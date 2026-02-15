@@ -7,42 +7,42 @@ import type { UserStyleConfig } from "./div-scrollbar";
 
 export const EXAMPLES = {
   // here is default style option
-  default: {
-    quickStyle: {
-      offset: "24px",
-      padding: "0",
-      paddingHover: "6px",
-      minimumSizePx: 20,
-      transition: {
-        duration: "0.15s",
-        timingFunction: "ease",
-        properties: ["backgroundColor", "padding", "width", "height"],
-      },
+  // default: {
+  //   quickStyle: {
+  //     offset: "24px",
+  //     padding: "0",
+  //     paddingHover: "6px",
+  //     minimumSizePx: 20,
+  //     transition: {
+  //       duration: "0.15s",
+  //       timingFunction: "ease",
+  //       properties: ["backgroundColor", "padding", "width", "height"],
+  //     },
 
-      borderRadius: "9999px",
+  //     borderRadius: "9999px",
 
-      thickness: {
-        thumb: "6px",
-        thumbHover: "6px",
-        track: "6px",
-        trackHover: "6px",
-      },
+  //     thickness: {
+  //       thumb: "6px",
+  //       thumbHover: "6px",
+  //       track: "6px",
+  //       trackHover: "6px",
+  //     },
 
-      color: {
-        thumb: "#00000044",
-        thumbHover: "#00000066",
-        track: "#00000010",
-        trackHover: "#00000010",
-      },
-    },
+  //     color: {
+  //       thumb: "#00000044",
+  //       thumbHover: "#00000066",
+  //       track: "#00000010",
+  //       trackHover: "#00000010",
+  //     },
+  //   },
 
-    advancedStyle: {
-      thumb: { position: "absolute", display: "flex" },
-      thumbHover: {},
-      track: { position: "absolute" },
-      trackHover: {},
-    },
-  },
+  //   advancedStyle: {
+  //     thumb: { position: "absolute", display: "flex" },
+  //     thumbHover: {},
+  //     track: { position: "absolute" },
+  //     trackHover: {},
+  //   },
+  // },
 
   // every style options are Partial
   // custom option merges default options
