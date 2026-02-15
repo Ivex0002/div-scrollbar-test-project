@@ -9,6 +9,7 @@ export const AXIS_CONFIG = {
     transform: (v: number) => `translateY(${v}px)`,
     sizeProp: "height",
     trackSize: "clientHeight",
+    orientation: "vertical" as const,
   },
   x: {
     scrollPos: "scrollLeft",
@@ -18,6 +19,7 @@ export const AXIS_CONFIG = {
     transform: (v: number) => `translateX(${v}px)`,
     sizeProp: "width",
     trackSize: "clientWidth",
+    orientation: "horizontal" as const,
   },
 } as const;
 

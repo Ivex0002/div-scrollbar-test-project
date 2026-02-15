@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { CONTAINER_STYLE, getScrollAreaStyle } from "./style";
 import type { ScrollDirection, UserStyleConfig } from "./type";
 import { Scrollbar } from "./scrollbar/scrollbar";
@@ -15,6 +15,7 @@ export function DivScrollbar({
   scrollDirection = "y",
 }: DivScrollbarProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollAreaId = useId();
 
   const [autoX, setAutoX] = useState(false);
   const [autoY, setAutoY] = useState(false);
@@ -46,7 +47,13 @@ export function DivScrollbar({
   return (
     <div style={CONTAINER_STYLE}>
       {/* content */}
-      <div ref={scrollAreaRef} style={getScrollAreaStyle(scrollDirection)}>
+      <div
+        role="region"
+        aria-label="Scrollable content"
+        ref={scrollAreaRef}
+        id={scrollAreaId}
+        style={getScrollAreaStyle(scrollDirection)}
+      >
         {children}
       </div>
 
@@ -55,6 +62,7 @@ export function DivScrollbar({
         <Scrollbar
           axis="y"
           scrollAreaRef={scrollAreaRef}
+          scrollAreaId={scrollAreaId}
           customStyle={customStyle}
         />
       )}
@@ -62,6 +70,7 @@ export function DivScrollbar({
         <Scrollbar
           axis="x"
           scrollAreaRef={scrollAreaRef}
+          scrollAreaId={scrollAreaId}
           customStyle={customStyle}
         />
       )}

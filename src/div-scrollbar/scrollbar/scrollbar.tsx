@@ -15,12 +15,14 @@ import { getAxisStyle, getHoverStyle } from "./getStyles";
 type ScrollbarProps = {
   axis: Axis;
   scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  scrollAreaId: string;
   customStyle?: UserStyleConfig;
 };
 
 export function Scrollbar({
   axis,
   scrollAreaRef,
+  scrollAreaId,
   customStyle = {},
 }: ScrollbarProps) {
   const TrackRef = useRef<HTMLDivElement>(null);
@@ -29,6 +31,10 @@ export function Scrollbar({
   const rafId = useRef<number | null>(null);
 
   const [isHover, setIsHover] = useState(false);
+  const [scrollState, setScrollState] = useState({
+    current: 0,
+    max: 0,
+  });
   const [isDragging, setIsDragging] = useState(false);
   const dragInfoRef = useRef({
     startCoord: 0,
@@ -58,6 +64,38 @@ export function Scrollbar({
   const cfg = AXIS_CONFIG[axis];
 
   // scroll
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+
+    let frame: number | null = null;
+
+    const updateAria = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        setScrollState({
+          current: Math.min(
+            el[cfg.scrollPos],
+            Math.max(0, el[cfg.scrollSize] - el[cfg.clientSize]),
+          ),
+          max: Math.max(0, el[cfg.scrollSize] - el[cfg.clientSize]),
+        });
+      });
+    };
+
+    updateAria();
+    el.addEventListener("scroll", updateAria);
+    const ro = new ResizeObserver(updateAria);
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener("scroll", updateAria);
+      ro.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [scrollAreaRef, cfg]);
+
   useEffect(() => {
     const el = scrollAreaRef.current;
     const thumb = thumbRef.current;
@@ -230,6 +268,13 @@ export function Scrollbar({
       >
         <div
           ref={thumbRef}
+          role="scrollbar"
+          tabIndex={0}
+          aria-orientation={cfg.orientation}
+          aria-controls={scrollAreaId}
+          aria-valuemin={0}
+          aria-valuemax={scrollState.max}
+          aria-valuenow={scrollState.current}
           onMouseDown={handleMouseDown}
           style={{
             ...thumbStyle,
