@@ -7,7 +7,6 @@ import {
   mergeStyleConfig,
 } from "./mergeStyles";
 import { AXIS_CONFIG, DRAG_THRESHOLD } from "./constants";
-import { createScrollHandler } from "./handlers/createScrollHandler";
 import { calcDragScroll } from "./handlers/calcDragScroll";
 import { createTrackClickHandler } from "./handlers/createTrackClickHandler";
 import { getAxisStyle, getHoverStyle } from "./getStyles";
@@ -28,7 +27,6 @@ export function Scrollbar({
   const TrackRef = useRef<HTMLDivElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
-  const rafId = useRef<number | null>(null);
 
   const [isHover, setIsHover] = useState(false);
   const [scrollState, setScrollState] = useState({
@@ -66,66 +64,62 @@ export function Scrollbar({
   // scroll
   useEffect(() => {
     const el = scrollAreaRef.current;
-    if (!el) return;
-
+    const thumb = thumbRef.current;
+    const layout = layoutRef.current;
     let frame: number | null = null;
 
-    const updateAria = () => {
+    if (!el || !thumb || !layout) return;
+
+    const scheduleScrollbarSync = () => {
       if (frame) return;
+
       frame = requestAnimationFrame(() => {
         frame = null;
+
+        // (cfg, setScrollState)
+        const visible = el[cfg.clientSize];
+        const total = el[cfg.scrollSize];
+        const scroll = el[cfg.scrollPos];
+
+        const max = Math.max(0, total - visible);
+        const current = Math.min(scroll, max);
+
         setScrollState({
-          current: Math.min(
-            el[cfg.scrollPos],
-            Math.max(0, el[cfg.scrollSize] - el[cfg.clientSize]),
-          ),
-          max: Math.max(0, el[cfg.scrollSize] - el[cfg.clientSize]),
+          current: Math.round(current),
+          max: Math.round(max),
         });
+
+        if (total <= visible) {
+          layout.style.display = "none";
+          thumb.style.display = "none";
+          return;
+        }
+
+        thumb.style.display = "block";
+
+        const layoutSize = layout[cfg.trackSize];
+        const thumbSize = Math.max(
+          (visible / total) * layoutSize,
+          style.quickStyle.minimumSizePx,
+        );
+
+        const thumbPos = (current / max) * (layoutSize - thumbSize);
+
+        thumb.style[cfg.sizeProp] = `${thumbSize}px`;
+        thumb.style.transform = cfg.transform(thumbPos);
       });
     };
 
-    updateAria();
-    el.addEventListener("scroll", updateAria);
-    const ro = new ResizeObserver(updateAria);
+    el.addEventListener("scroll", scheduleScrollbarSync);
+    const ro = new ResizeObserver(scheduleScrollbarSync);
     ro.observe(el);
 
     return () => {
-      el.removeEventListener("scroll", updateAria);
+      el.removeEventListener("scroll", scheduleScrollbarSync);
       ro.disconnect();
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [scrollAreaRef, cfg]);
-
-  useEffect(() => {
-    const el = scrollAreaRef.current;
-    const thumb = thumbRef.current;
-    const layout = layoutRef.current;
-    if (!el || !thumb || !layout) return;
-
-    const onScroll = createScrollHandler(
-      axis,
-      rafId,
-      el,
-      thumb,
-      layout,
-      style.quickStyle.minimumSizePx,
-    );
-
-    onScroll();
-    el.addEventListener("scroll", onScroll, { passive: true });
-
-    const ro = new ResizeObserver(onScroll);
-    ro.observe(el);
-
-    return () => {
-      if (rafId.current !== null) {
-        cancelAnimationFrame(rafId.current);
-        rafId.current = null;
-      }
-      el.removeEventListener("scroll", onScroll);
-      ro.disconnect();
-    };
-  }, [axis, scrollAreaRef, style.quickStyle.minimumSizePx]);
+  }, [scrollAreaRef, cfg, style.quickStyle.minimumSizePx]);
 
   // separated padding style apply track
   useEffect(() => {

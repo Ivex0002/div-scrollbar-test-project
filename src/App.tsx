@@ -196,10 +196,7 @@ function App() {
         }}
         ref={ref}
       >
-        <DivScrollbar
-          scrollDirection="auto"
-          customStyle={EXAMPLES.usingAdvancedStyle}
-        >
+        <DivScrollbar scrollDirection="auto" customStyle={EXAMPLES.bigOne}>
           <div
             style={{
               height: "40rem",
