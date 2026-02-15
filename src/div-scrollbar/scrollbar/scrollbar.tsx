@@ -121,6 +121,39 @@ export function Scrollbar({
     };
   }, [scrollAreaRef, cfg, style.quickStyle.minimumSizePx]);
 
+  // scroll : wheel
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    const layout = layoutRef.current;
+    if (!el || !layout) return;
+
+    let wheelDelta = 0;
+    let frame: number | null = null;
+
+    const schedule = () => {
+      if (frame) return;
+
+      frame = requestAnimationFrame(() => {
+        frame = null;
+
+        el[cfg.scrollPos] += wheelDelta;
+        wheelDelta = 0;
+      });
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      wheelDelta += e.deltaY;
+      schedule();
+    };
+
+    layout.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      layout.removeEventListener("wheel", handleWheel);
+    };
+  }, [scrollAreaRef, cfg]);
+
   // separated padding style apply track
   useEffect(() => {
     const track = TrackRef.current;
