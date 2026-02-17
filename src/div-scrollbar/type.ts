@@ -1,8 +1,16 @@
 import type { CSSProperties } from "react";
+import type { AXIS_CONFIG } from "./scrollbar/constants";
 
 export type Axis = "x" | "y";
-
 export type ScrollDirection = "x" | "y" | "auto";
+
+export type AxisConfig = (typeof AXIS_CONFIG)[Axis];
+export type ScrollMetrics = {
+  current: number;
+  max: number;
+  visible: number;
+  total: number;
+};
 
 export type AnimatableCSSProperty = keyof React.CSSProperties;
 

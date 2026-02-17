@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { CONTAINER_STYLE, getScrollAreaStyle } from "./style";
+import { getScrollAreaStyle } from "./style";
 import type { ScrollDirection, UserStyleConfig } from "./type";
 import { Scrollbar } from "./scrollbar/scrollbar";
 
@@ -45,17 +45,17 @@ export function DivScrollbar({
     scrollDirection === "x" || (scrollDirection === "auto" && autoX);
 
   return (
-    <div style={CONTAINER_STYLE}>
+    // <div style={CONTAINER_STYLE}>
+
+    <div
+      role="region"
+      aria-label="Scrollable content"
+      ref={scrollAreaRef}
+      id={scrollAreaId}
+      style={getScrollAreaStyle(scrollDirection)}
+    >
       {/* content */}
-      <div
-        role="region"
-        aria-label="Scrollable content"
-        ref={scrollAreaRef}
-        id={scrollAreaId}
-        style={getScrollAreaStyle(scrollDirection)}
-      >
-        {children}
-      </div>
+      {children}
 
       {/* scrollbars */}
       {showY && (
@@ -75,5 +75,6 @@ export function DivScrollbar({
         />
       )}
     </div>
+    // </div>
   );
 }
