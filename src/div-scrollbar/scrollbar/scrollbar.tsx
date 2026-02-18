@@ -11,10 +11,10 @@ import {
   //  DRAG_THRESHOLD
 } from "./constants";
 // import { calcDragScroll } from "./handlers/calcDragScroll";
-import { createTrackClickHandler } from "./handlers/createTrackClickHandler";
+import { createTrackClickHandler } from "./methods/createTrackClickHandler";
 import { getAxisStyle, getHoverStyle } from "./getStyles";
-import { updateThumb } from "./handlers/updateThumb";
-import { getScrollMetrics } from "./handlers/getScrollMetrics";
+import { updateThumb } from "./methods/updateThumb";
+import { getScrollMetrics } from "./methods/getScrollMetrics";
 
 type ScrollbarProps = {
   axis: Axis;
