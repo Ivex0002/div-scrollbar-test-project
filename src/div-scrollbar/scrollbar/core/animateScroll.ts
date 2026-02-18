@@ -1,4 +1,4 @@
-import type { AxisConfig } from "../../type";
+import type { AxisConfig } from "../../types";
 
 export function animateScroll(
   el: HTMLDivElement,

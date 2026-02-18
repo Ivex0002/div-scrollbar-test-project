@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Axis, UserStyleConfig } from "../type";
+import type { Axis, UserStyleConfig } from "../types";
 import { BASE_LAYOUT_STYLE, DEFAULT_STYLE_CONFIG } from "../defaultStyleConfig";
 import {
   mergeBaseStyle,
@@ -9,12 +9,12 @@ import {
 import {
   AXIS_CONFIG,
   //  DRAG_THRESHOLD
-} from "./constants";
+} from "../scrollbar/constants";
 // import { calcDragScroll } from "./handlers/calcDragScroll";
-import { createTrackClickHandler } from "./methods/createTrackClickHandler";
+import { createTrackClickHandler } from "../scrollbar/events/createTrackClickHandler";
 import { getAxisStyle, getHoverStyle } from "./getStyles";
-import { updateThumb } from "./methods/updateThumb";
-import { getScrollMetrics } from "./methods/getScrollMetrics";
+import { updateThumb } from "../scrollbar/view/renderer/updateThumb";
+import { getScrollMetrics } from "../scrollbar/logic/getScrollMetrics";
 
 type ScrollbarProps = {
   axis: Axis;

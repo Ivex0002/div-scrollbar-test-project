@@ -1,4 +1,4 @@
-import type { AxisConfig, ScrollMetrics } from "../../type";
+import type { AxisConfig, ScrollMetrics } from "../../types";
 
 export function getScrollMetrics(
   el: HTMLDivElement,

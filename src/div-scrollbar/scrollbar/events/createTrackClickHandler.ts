@@ -1,4 +1,4 @@
-import type { Axis, StyleConfig } from "../../type";
+import type { Axis, StyleConfig } from "../../types";
 import { AXIS_CONFIG } from "../constants";
 
 export function createTrackClickHandler(

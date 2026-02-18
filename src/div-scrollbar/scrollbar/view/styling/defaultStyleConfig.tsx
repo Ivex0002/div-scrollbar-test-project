@@ -1,5 +1,31 @@
 import type { CSSProperties } from "react";
 import type { AdvancedCSSProperties, StyleConfig } from "./type";
+import type { ScrollDirection } from "../../../types";
+
+export const CONTAINER_STYLE: React.CSSProperties = {
+  position: "relative",
+  overflow: "hidden",
+  width: "100%",
+  height: "100%",
+};
+
+const BASE_SCROLL_AREA_STYLE: React.CSSProperties = {
+  width: "100%",
+  height: "100%",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
+};
+
+export function getScrollAreaStyle(
+  direction: ScrollDirection,
+): React.CSSProperties {
+  return {
+    ...BASE_SCROLL_AREA_STYLE,
+    ...(direction === "y" && { overflowY: "auto" }),
+    ...(direction === "x" && { overflowX: "auto" }),
+    ...(direction === "auto" && { overflowX: "auto", overflowY: "auto" }),
+  };
+}
 
 export const BASE_LAYOUT_STYLE: CSSProperties = {
   position: "absolute",
