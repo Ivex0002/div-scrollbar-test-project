@@ -1,6 +1,9 @@
 import type { CSSProperties } from "react";
-import type { AdvancedCSSProperties, StyleConfig } from "./type";
-import type { ScrollDirection } from "../../../types";
+import type {
+  AdvancedCSSProperties,
+  ScrollDirection,
+  StyleConfig,
+} from "../../../types";
 
 export const CONTAINER_STYLE: React.CSSProperties = {
   position: "relative",

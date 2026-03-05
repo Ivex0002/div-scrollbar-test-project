@@ -5,8 +5,9 @@ import type {
   Thumb,
   Track,
   Transition,
-} from "../type";
-import { AXIS_DIMENSION, AXIS_POSITION } from "./constants";
+} from "../../../types";
+import { AXIS_DIMENSION, AXIS_POSITION } from "../../constants";
+import { BASE_LAYOUT_STYLE } from "./defaultStyleConfig";
 
 function getTransition(transition: Transition): string {
   const { duration, timingFunction, properties } = transition;
@@ -27,6 +28,7 @@ export function getAxisStyle(
 
   return {
     layout: {
+      ...BASE_LAYOUT_STYLE,
       [dim.thickness]: thickness.track,
       [dim.align]: "center",
       ...pos.layout,

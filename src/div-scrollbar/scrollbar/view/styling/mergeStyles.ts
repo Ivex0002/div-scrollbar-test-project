@@ -4,7 +4,7 @@ import type {
   Thumb,
   Track,
   UserStyleConfig,
-} from "../type";
+} from "../../../types";
 
 type PlainObject = Record<string, unknown>;
 

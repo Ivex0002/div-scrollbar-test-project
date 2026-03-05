@@ -1,5 +1,3 @@
-export const DRAG_THRESHOLD = 3;
-
 export const AXIS_CONFIG = {
   y: {
     scrollPos: "scrollTop",
@@ -7,7 +5,8 @@ export const AXIS_CONFIG = {
     clientSize: "clientHeight",
     clientCoord: "clientY",
     transform: (v: number) => `translateY(${v}px)`,
-    sizeProp: "height",
+    sizeStyleProp: "height",
+    sizeDomProp: "offsetHeight",
     trackSize: "clientHeight",
     orientation: "vertical" as const,
   },
@@ -17,7 +16,8 @@ export const AXIS_CONFIG = {
     clientSize: "clientWidth",
     clientCoord: "clientX",
     transform: (v: number) => `translateX(${v}px)`,
-    sizeProp: "width",
+    sizeStyleProp: "width",
+    sizeDomProp: "offsetWidth",
     trackSize: "clientWidth",
     orientation: "horizontal" as const,
   },

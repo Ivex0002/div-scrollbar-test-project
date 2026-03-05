@@ -23,6 +23,6 @@ export function updateThumb(
 
   const thumbPos = max === 0 ? 0 : (current / max) * (layoutSize - thumbSize);
 
-  thumb.style[cfg.sizeProp] = `${thumbSize}px`;
+  thumb.style[cfg.sizeStyleProp] = `${thumbSize}px`;
   thumb.style.transform = cfg.transform(thumbPos);
 }

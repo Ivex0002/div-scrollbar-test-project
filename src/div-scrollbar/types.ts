@@ -68,3 +68,5 @@ export type UserStyleConfig = DeepPartial<StyleConfig>;
 export type Thumb = { thumb: CSSProperties };
 export type Track = { track: CSSProperties };
 export type Layout = { layout: CSSProperties };
+
+export type ScrollState = { current: number; max: number };
