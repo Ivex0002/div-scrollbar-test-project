@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { DivScrollbar } from "./div-scrollbar/index";
-import type { UserStyleConfig } from "./div-scrollbar";
+import { DivScrollbar } from "./_lagacy/index";
+import type { UserStyleConfig } from "./_lagacy";
 
 export const EXAMPLES = {
   // here is default style option
