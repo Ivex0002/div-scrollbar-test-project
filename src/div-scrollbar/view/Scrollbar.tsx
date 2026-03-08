@@ -1,21 +1,26 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AXIS_CONFIG } from "../style/constants";
-import type { Axis } from "../types";
+import type { Axis, ScrollSystem } from "../types";
 
 type ScrollbarProps = {
   axis: Axis;
   scrollAreaRef: React.RefObject<HTMLDivElement | null>;
   scrollAreaId: string;
+  system: ScrollSystem;
 };
 
 export function Scrollbar({
   axis,
   scrollAreaRef,
   scrollAreaId,
+  system,
 }: ScrollbarProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
+
+  const model = axis === "y" ? system.modelY : system.modelX;
+  const controller = axis === "y" ? system.controllerY : system.controllerX;
 
   const [isHover, setIsHover] = useState(false);
 
@@ -36,8 +41,8 @@ export function Scrollbar({
           aria-orientation={cfg.orientation}
           aria-controls={scrollAreaId}
           aria-valuemin={0}
-          aria-valuemax={scrollState.max}
-          aria-valuenow={scrollState.current}
+          aria-valuemax={model.getSnapshot().max}
+          aria-valuenow={model.getSnapshot().current}
           //   onMouseDown={handleMouseDown}
         />
       </div>

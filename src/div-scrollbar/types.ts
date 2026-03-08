@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { AXIS_CONFIG } from "./style/constants";
+import type { ScrollModel } from "./core/ScrollModel";
 
 export type Axis = "x" | "y";
 export type ScrollDirection = "x" | "y" | "auto";
@@ -47,3 +48,10 @@ type DeepPartial<T> = {
 };
 
 export type UserStyleConfig = DeepPartial<StyleConfig>;
+
+export type ScrollSystem = {
+  modelX: ScrollModel;
+  modelY: ScrollModel;
+  controllerX: ScrollController;
+  controllerY: ScrollController;
+};

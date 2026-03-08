@@ -66,19 +66,25 @@ export function DivScrollbar({
         {children}
       </div>
 
-      {showY && (
-        <Scrollbar
-          axis="y"
-          scrollAreaRef={scrollAreaRef}
-          scrollAreaId={scrollAreaId}
-        />
-      )}
-      {showX && (
-        <Scrollbar
-          axis="x"
-          scrollAreaRef={scrollAreaRef}
-          scrollAreaId={scrollAreaId}
-        />
+      {systemRef.current && (
+        <>
+          {showY && (
+            <Scrollbar
+              axis="y"
+              system={systemRef.current}
+              scrollAreaRef={scrollAreaRef}
+              scrollAreaId={scrollAreaId}
+            />
+          )}
+          {showX && (
+            <Scrollbar
+              axis="x"
+              system={systemRef.current}
+              scrollAreaRef={scrollAreaRef}
+              scrollAreaId={scrollAreaId}
+            />
+          )}
+        </>
       )}
     </div>
   );
