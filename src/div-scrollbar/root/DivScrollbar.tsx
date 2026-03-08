@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CONTAINER_STYLE } from "../style/defaultStyles";
-import type { ScrollDirection, UserStyleConfig } from "../type";
+import type { ScrollDirection, UserStyleConfig } from "../types";
 
 type DivScrollbarProps = {
   children?: React.ReactNode;

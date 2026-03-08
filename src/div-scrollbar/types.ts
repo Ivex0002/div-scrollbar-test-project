@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { AXIS_CONFIG } from "./style/styleConstants";
+import type { AXIS_CONFIG } from "./style/constants";
 
 export type Axis = "x" | "y";
 export type ScrollDirection = "x" | "y" | "auto";
