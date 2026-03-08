@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { DivScrollbar } from "./_legacy/index";
+// import { DivScrollbar } from "./_legacy/index";
 import type { UserStyleConfig } from "./_legacy";
 
 export const EXAMPLES = {
@@ -196,22 +196,22 @@ function App() {
         }}
         ref={ref}
       >
-        <DivScrollbar scrollDirection="auto" customStyle={EXAMPLES.bigOne}>
-          <div
-            style={{
-              height: "40rem",
-              width: "40rem",
-              // backgroundColor: "#000000",
-            }}
-          >
-            <a href="https://vite.dev" target="_blank">
-              <img src={viteLogo} className="logo" alt="Vite logo" />
-            </a>
-            <a href="https://react.dev" target="_blank">
-              <img src={reactLogo} className="logo react" alt="React logo" />
-            </a>
-          </div>
-        </DivScrollbar>
+        {/* <DivScrollbar scrollDirection="auto" customStyle={EXAMPLES.bigOne}> */}
+        <div
+          style={{
+            height: "40rem",
+            width: "40rem",
+            // backgroundColor: "#000000",
+          }}
+        >
+          <a href="https://vite.dev" target="_blank">
+            <img src={viteLogo} className="logo" alt="Vite logo" />
+          </a>
+          <a href="https://react.dev" target="_blank">
+            <img src={reactLogo} className="logo react" alt="React logo" />
+          </a>
+        </div>
+        {/* </DivScrollbar> */}
       </div>
       <h1>Vite + React</h1>
       <div className="card">
