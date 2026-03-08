@@ -1,6 +1,8 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { CONTAINER_STYLE } from "../style/defaultStyles";
 import type { ScrollDirection, UserStyleConfig } from "../types";
+import { Scrollbar } from "../view/Scrollbar";
+import { createScrollSystem } from "../core/createScrollSystem";
 
 type DivScrollbarProps = {
   children?: React.ReactNode;
@@ -15,6 +17,12 @@ export function DivScrollbar({
 }: DivScrollbarProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const scrollAreaId = useId();
+  const systemRef = useRef<ReturnType<typeof createScrollSystem> | null>(null);
+
+  useLayoutEffect(() => {
+    if (!scrollAreaRef.current) return;
+    systemRef.current = createScrollSystem(scrollAreaRef.current);
+  }, []);
 
   // auto option
   const [autoX, setAutoX] = useState(false);
@@ -38,7 +46,7 @@ export function DivScrollbar({
     ro.observe(el);
 
     return () => ro.disconnect();
-  }, [scrollDirection, children]);
+  }, [scrollDirection]);
 
   // show variables
   const showY =
@@ -57,6 +65,21 @@ export function DivScrollbar({
       >
         {children}
       </div>
+
+      {showY && (
+        <Scrollbar
+          axis="y"
+          scrollAreaRef={scrollAreaRef}
+          scrollAreaId={scrollAreaId}
+        />
+      )}
+      {showX && (
+        <Scrollbar
+          axis="x"
+          scrollAreaRef={scrollAreaRef}
+          scrollAreaId={scrollAreaId}
+        />
+      )}
     </div>
   );
 }
